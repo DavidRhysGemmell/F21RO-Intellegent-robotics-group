@@ -2,6 +2,7 @@ from controller import Robot
 from datetime import datetime
 import math
 import numpy as np
+import sys
 class Controller:
     def __init__(self, robot):        
         # Robot Parameters
@@ -130,9 +131,11 @@ class Controller:
             distance_left = self.proximity_sensors[5].getValue()
             distance_right= self.proximity_sensors[2].getValue()
             distance_center= (self.proximity_sensors[0].getValue()+self.proximity_sensors[7].getValue())/2
-            if self.black==True:
-                
+            
+
+            if self.black==True:                   
                 distance_center= self.proximity_sensors[7].getValue()
+                
             else:
                 distance_center= self.proximity_sensors[0].getValue()
 
@@ -153,7 +156,16 @@ class Controller:
                 else:
                     self.velocity_left = -1
                     self.velocity_right = 1
+            self.black_square()
                     
+            if distance_left >100 and distance_right > 100 and self.proximity_sensors[6].getValue() > 100 and self.proximity_sensors[7].getValue()>100 and self.proximity_sensors[0].getValue()>100 and self.proximity_sensors[1].getValue()>100:
+                self.velocity_left = 0
+                self.velocity_right = 0
+                self.left_motor.setVelocity(self.velocity_left)
+                self.right_motor.setVelocity(self.velocity_right)   
+                print('reached goal')
+                sys.exit("System Exiting")
+                print("Program End")                 
                               
             self.left_motor.setVelocity(self.velocity_left)
             self.right_motor.setVelocity(self.velocity_right)       
