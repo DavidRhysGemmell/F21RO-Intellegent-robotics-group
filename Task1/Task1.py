@@ -23,7 +23,7 @@ class Controller:
         self.proximity_sensors = []
         for i in range(8):
             sensor_name = 'ps' + str(i)
-            self.proximity_sensors.append(self.robot.getDevice(sensor_name))
+            self.proximity_sensors.append(self.robot.getDevice(sensor_name)) #higher number, closer object
             self.proximity_sensors[i].enable(self.time_step)
        
         # Enable Ground Sensors
@@ -51,33 +51,35 @@ class Controller:
         
     def sense_compute_and_actuate(self):
           
-        if(len(self.inputs) > 0 and len(self.inputsPrevious) > 0):
-            # #Check for any possible collision
-            if(np.max(self.inputs[3:11]) > 0.4):
-                # #Time
-                time = datetime.now()
-                print("({} - {}) Object or walls detected!".format(time.second, time.microsecond))
-            # #Turn
-            if(self.flag_turn): #if the minimum distance of all proximity sensors is less than:
-                self.velocity_left = -0.3;
-                self.velocity_right = 0.3;
-                if(np.min(self.inputs[0:3])< 0.35):
-                    self.flag_turn = 0
-            else:        
-                # #Check end of line
-                if((np.min(self.inputs[0:3])-np.min(self.inputsPrevious[0:3])) > 0.2):
-                    self.flag_turn = 1
-                else:    
-                   ##Follow the line    
-                    if(self.inputs[0] < self.inputs[1] and self.inputs[0] < self.inputs[2]):
-                        self.velocity_left = 0.5;
-                        self.velocity_right = 1;
-                    elif(self.inputs[1] < self.inputs[0] and self.inputs[1] < self.inputs[2]):
-                        self.velocity_left = 1;
-                        self.velocity_right = 1;    
-                    elif(self.inputs[2] < self.inputs[0] and self.inputs[2] < self.inputs[1]):
-                        self.velocity_left = 1;
-                        self.velocity_right = 0.5;
+        # if(len(self.inputs) > 0 and len(self.inputsPrevious) > 0):
+            #Check for any possible collision
+            # if(np.max(self.inputs[3:11]) > 0.4):
+                #Time
+                # time = datetime.now()
+                # print("({} - {}) Object or walls detected!".format(time.second, time.microsecond))
+            #Turn
+            # if(self.flag_turn): #if the minimum distance of all proximity sensors is less than:
+                # self.velocity_left = -0.3;
+                # self.velocity_right = 0.3;
+                # if(np.min(self.inputs[0:3])< 0.35):
+                    # self.flag_turn = 0
+            # else:        
+                #Check end of line
+                # if((np.min(self.inputs[0:3])-np.min(self.inputsPrevious[0:3])) > 0.2):
+                    # self.flag_turn = 1
+                # else:    
+                   # ##Follow the line    
+                    # if(self.inputs[0] < self.inputs[1] and self.inputs[0] < self.inputs[2]):
+                        # self.velocity_left = 0.5;
+                        # self.velocity_right = 1;
+                    # elif(self.inputs[1] < self.inputs[0] and self.inputs[1] < self.inputs[2]):
+                        # self.velocity_left = 1;
+                        # self.velocity_right = 1;    
+                    # elif(self.inputs[2] < self.inputs[0] and self.inputs[2] < self.inputs[1]):
+                        # self.velocity_left = 1;
+                        # self.velocity_right = 0.5;
+                        
+ 
         self.left_motor.setVelocity(self.velocity_left)
         self.right_motor.setVelocity(self.velocity_right)
         
@@ -93,6 +95,8 @@ class Controller:
             left = self.left_ir.getValue() #black is below 500, white above 500
             center = self.center_ir.getValue()
             right = self.right_ir.getValue()
+            # if self.center_ir<=500:
+                # turn_right=true
             # Adjust Values
             min_gs = 0
             max_gs = 1000
@@ -113,6 +117,7 @@ class Controller:
             for i in range(8):
                 if(i==0 or i==1 or i==2 or i==5 or i==6 or i==7):        
                     temp = self.proximity_sensors[i].getValue()
+                    #print(self.proximity_sensors[2].getValue())
                     # Adjust Values
                     min_ds = 0
                     max_ds = 2400
@@ -121,7 +126,22 @@ class Controller:
                     # Save Data
                     self.inputs.append((temp-min_ds)/(max_ds-min_ds))
                     #print("Distance Sensors - Index: {}  Value: {}".format(i,self.proximity_sensors[i].getValue()))
-      
+            distance_left = self.proximity_sensors[5].getValue()
+            distance_right= self.proximity_sensors[2].getValue()
+            distance_center= (self.proximity_sensors[0].getValue()+self.proximity_sensors[7].getValue())/2
+            if abs(distance_left - distance_right)<300:
+                self.velocity_left = 1
+                self.velocity_right = 1
+            elif distance_left>distance_right:
+                self.velocity_left = 1
+                self.velocity_right = 0.5
+            elif  distance_left<distance_right:
+                self.velocity_left = 0.5
+                self.velocity_right = 1
+                            
+            self.left_motor.setVelocity(self.velocity_left)
+            self.right_motor.setVelocity(self.velocity_right)       
+                
             # Smooth filter (Average)
             smooth = 30
             if(count == smooth):
