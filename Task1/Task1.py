@@ -51,37 +51,38 @@ class Controller:
         
     def sense_compute_and_actuate(self):
           
-        # if(len(self.inputs) > 0 and len(self.inputsPrevious) > 0):
-            Check for any possible collision
-            # if(np.max(self.inputs[3:11]) > 0.4):
-                Time
-                # time = datetime.now()
-                # print("({} - {}) Object or walls detected!".format(time.second, time.microsecond))
-            Turn
-            # if(self.flag_turn): #if the minimum distance of all proximity sensors is less than:
-                # self.velocity_left = -0.3;
-                # self.velocity_right = 0.3;
-                # if(np.min(self.inputs[0:3])< 0.35):
-                    # self.flag_turn = 0
-            # else:        
-                Check end of line
-                # if((np.min(self.inputs[0:3])-np.min(self.inputsPrevious[0:3])) > 0.2):
-                    # self.flag_turn = 1
-                # else:    
-                    Follow the line    
-                    # if(self.inputs[0] < self.inputs[1] and self.inputs[0] < self.inputs[2]):
-                        # self.velocity_left = 0.5;
-                        # self.velocity_right = 1;
-                    # elif(self.inputs[1] < self.inputs[0] and self.inputs[1] < self.inputs[2]):
-                        # self.velocity_left = 1;
-                        # self.velocity_right = 1;    
-                    # elif(self.inputs[2] < self.inputs[0] and self.inputs[2] < self.inputs[1]):
-                        # self.velocity_left = 1;
-                        # self.velocity_right = 0.5;
-        self.velocity_left=1
-        self.velocity_right=1
+        if(len(self.inputs) > 0 and len(self.inputsPrevious) > 0):
+            # #Check for any possible collision
+            if(np.max(self.inputs[3:11]) > 0.4):
+                # #Time
+                time = datetime.now()
+                print("({} - {}) Object or walls detected!".format(time.second, time.microsecond))
+            # #Turn
+            if(self.flag_turn): #if the minimum distance of all proximity sensors is less than:
+                self.velocity_left = -0.3;
+                self.velocity_right = 0.3;
+                if(np.min(self.inputs[0:3])< 0.35):
+                    self.flag_turn = 0
+            else:        
+                # #Check end of line
+                if((np.min(self.inputs[0:3])-np.min(self.inputsPrevious[0:3])) > 0.2):
+                    self.flag_turn = 1
+                else:    
+                   ##Follow the line    
+                    if(self.inputs[0] < self.inputs[1] and self.inputs[0] < self.inputs[2]):
+                        self.velocity_left = 0.5;
+                        self.velocity_right = 1;
+                    elif(self.inputs[1] < self.inputs[0] and self.inputs[1] < self.inputs[2]):
+                        self.velocity_left = 1;
+                        self.velocity_right = 1;    
+                    elif(self.inputs[2] < self.inputs[0] and self.inputs[2] < self.inputs[1]):
+                        self.velocity_left = 1;
+                        self.velocity_right = 0.5;
         self.left_motor.setVelocity(self.velocity_left)
         self.right_motor.setVelocity(self.velocity_right)
+        
+        
+        
     def run_robot(self):        
         # Main Loop
         count = 0;
@@ -89,7 +90,7 @@ class Controller:
         while self.robot.step(self.time_step) != -1:
             # Read Ground Sensors
             self.inputs = []
-            left = self.left_ir.getValue()
+            left = self.left_ir.getValue() #black is below 500, white above 500
             center = self.center_ir.getValue()
             right = self.right_ir.getValue()
             # Adjust Values
