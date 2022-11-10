@@ -41,6 +41,9 @@ class Controller:
         # Flag
         self.flag_turn = 0
         
+        #black
+        self.black=False
+        
     def clip_value(self,value,min_max):
         if (value > min_max):
             return min_max;
@@ -49,8 +52,10 @@ class Controller:
         return value;
         
         
-    def sense_compute_and_actuate(self):
-          
+    def black_square(self):
+          if self.center_ir.getValue()<500: #it's black
+              self.black=True
+            
         # if(len(self.inputs) > 0 and len(self.inputsPrevious) > 0):
             #Check for any possible collision
             # if(np.max(self.inputs[3:11]) > 0.4):
@@ -78,11 +83,7 @@ class Controller:
                     # elif(self.inputs[2] < self.inputs[0] and self.inputs[2] < self.inputs[1]):
                         # self.velocity_left = 1;
                         # self.velocity_right = 0.5;
-                        
- 
-        self.left_motor.setVelocity(self.velocity_left)
-        self.right_motor.setVelocity(self.velocity_right)
-        
+                       
         
         
     def run_robot(self):        
@@ -129,7 +130,13 @@ class Controller:
             distance_left = self.proximity_sensors[5].getValue()
             distance_right= self.proximity_sensors[2].getValue()
             distance_center= (self.proximity_sensors[0].getValue()+self.proximity_sensors[7].getValue())/2
-            if abs(distance_left - distance_right)<300:
+            if self.black==True:
+                
+                distance_center= self.proximity_sensors[7].getValue()
+            else:
+                distance_center= self.proximity_sensors[0].getValue()
+
+            if abs(distance_left - distance_right)<100:
                 self.velocity_left = 1
                 self.velocity_right = 1
             elif distance_left>distance_right:
@@ -138,7 +145,16 @@ class Controller:
             elif  distance_left<distance_right:
                 self.velocity_left = 0.5
                 self.velocity_right = 1
-                            
+            
+            if distance_center>100:                
+                if self.black==True:
+                    self.velocity_left = 1
+                    self.velocity_right = -1
+                else:
+                    self.velocity_left = -1
+                    self.velocity_right = 1
+                    
+                              
             self.left_motor.setVelocity(self.velocity_left)
             self.right_motor.setVelocity(self.velocity_right)       
                 
@@ -148,7 +164,7 @@ class Controller:
                 inputs_avg = [sum(x) for x in zip(*inputs_avg)]
                 self.inputs = [x/smooth for x in inputs_avg]
                 # Compute and actuate
-                self.sense_compute_and_actuate()
+                self.black_square()
                 # Reset
                 count = 0
                 inputs_avg = []
