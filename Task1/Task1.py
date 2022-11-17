@@ -39,54 +39,15 @@ class Controller:
         self.inputs = []
         self.inputsPrevious = []
         
-        # Flag
-        self.flag_turn = 0
-        
         #black
-        self.black=False
-        
-    def clip_value(self,value,min_max):
-        if (value > min_max):
-            return min_max;
-        elif (value < -min_max):
-            return -min_max;
-        return value;
+        self.black=False #set at start no black detected
         
         
     def black_square(self):
-          if self.center_ir.getValue()<500: #it's black
+          if self.center_ir.getValue()<500: #If black (gs<500) is detected, black=True
               self.black=True
-            
-        # if(len(self.inputs) > 0 and len(self.inputsPrevious) > 0):
-            #Check for any possible collision
-            # if(np.max(self.inputs[3:11]) > 0.4):
-                #Time
-                # time = datetime.now()
-                # print("({} - {}) Object or walls detected!".format(time.second, time.microsecond))
-            #Turn
-            # if(self.flag_turn): #if the minimum distance of all proximity sensors is less than:
-                # self.velocity_left = -0.3;
-                # self.velocity_right = 0.3;
-                # if(np.min(self.inputs[0:3])< 0.35):
-                    # self.flag_turn = 0
-            # else:        
-                #Check end of line
-                # if((np.min(self.inputs[0:3])-np.min(self.inputsPrevious[0:3])) > 0.2):
-                    # self.flag_turn = 1
-                # else:    
-                   # ##Follow the line    
-                    # if(self.inputs[0] < self.inputs[1] and self.inputs[0] < self.inputs[2]):
-                        # self.velocity_left = 0.5;
-                        # self.velocity_right = 1;
-                    # elif(self.inputs[1] < self.inputs[0] and self.inputs[1] < self.inputs[2]):
-                        # self.velocity_left = 1;
-                        # self.velocity_right = 1;    
-                    # elif(self.inputs[2] < self.inputs[0] and self.inputs[2] < self.inputs[1]):
-                        # self.velocity_left = 1;
-                        # self.velocity_right = 0.5;
-                       
-        
-        
+              print('black detected on floor')
+                                     
     def run_robot(self):        
         # Main Loop
         count = 0;
@@ -97,93 +58,64 @@ class Controller:
             left = self.left_ir.getValue() #black is below 500, white above 500
             center = self.center_ir.getValue()
             right = self.right_ir.getValue()
-            # if self.center_ir<=500:
-                # turn_right=true
-            # Adjust Values
-            min_gs = 0
-            max_gs = 1000
-            if(left > max_gs): left = max_gs
+            
+            min_gs = 0 #minimum ground sensor output
+            max_gs = 1000 # maximum ground sensor output
+            
+            #this just makes sure all the values are within min_gs and max_gs
+            if(left > max_gs): left = max_gs 
             if(center > max_gs): center = max_gs
             if(right > max_gs): right = max_gs
             if(left < min_gs): left = min_gs
             if(center < min_gs): center = min_gs
             if(right < min_gs): right = min_gs
-            
-            # Save Data
-            self.inputs.append((left-min_gs)/(max_gs-min_gs))
-            self.inputs.append((center-min_gs)/(max_gs-min_gs))
-            self.inputs.append((right-min_gs)/(max_gs-min_gs))
-            #print("Ground Sensors \n    left {} center {} right {}".format(self.inputs[0],self.inputs[1],self.inputs[2]))
+
             
             # Read Distance Sensors
-            for i in range(8):
-                if(i==0 or i==1 or i==2 or i==5 or i==6 or i==7):        
-                    temp = self.proximity_sensors[i].getValue()
-                    #print(self.proximity_sensors[2].getValue())
-                    # Adjust Values
-                    min_ds = 0
-                    max_ds = 2400
-                    if(temp > max_ds): temp = max_ds
-                    if(temp < min_ds): temp = min_ds
-                    # Save Data
-                    self.inputs.append((temp-min_ds)/(max_ds-min_ds))
-                    #print("Distance Sensors - Index: {}  Value: {}".format(i,self.proximity_sensors[i].getValue()))
+
             distance_left = self.proximity_sensors[5].getValue()
             distance_right= self.proximity_sensors[2].getValue()
-            distance_center= (self.proximity_sensors[0].getValue()+self.proximity_sensors[7].getValue())/2
+            distance_center= (self.proximity_sensors[0].getValue()+self.proximity_sensors[7].getValue())/2       
             
-
+            
+            #Checks if a black has been detected
             if self.black==True:                   
-                distance_center= self.proximity_sensors[7].getValue()
+                distance_center= self.proximity_sensors[7].getValue() #if black has been detected we take the front left sensor as the center sensor. This stops the bot oversteering once it's turned right.
                 
             else:
-                distance_center= self.proximity_sensors[0].getValue()
+                distance_center= self.proximity_sensors[0].getValue()#if black has not been detected we take the front right sensor as the center sensor. This stops the bot oversteering once it's turned left.
 
-            if abs(distance_left - distance_right)<100:
+            if abs(distance_left - distance_right)<100: #If the difference between the left and right sensors is relatively equal the bot will drive straight.
                 self.velocity_left = 1
                 self.velocity_right = 1
-            elif distance_left>distance_right:
+            elif distance_left>distance_right: #If the left wall is closer than the right wall (within margin) then the bot will turn right. Note, greater number = closer.
                 self.velocity_left = 1
                 self.velocity_right = 0.5
-            elif  distance_left<distance_right:
+            elif  distance_left<distance_right:#If the right wall is closer than the left wall (within margin) then the bot will turn left. Note, greater number = closer.
                 self.velocity_left = 0.5
                 self.velocity_right = 1
             
-            if distance_center>100:                
-                if self.black==True:
+            if distance_center>100:   #If the frontal proximity sensors detect an object close to it              
+                if self.black==True: #If it's seen black the bot will turn right
                     self.velocity_left = 1
                     self.velocity_right = -1
-                else:
+                else: #If it has not seen black then the bot will turn left
                     self.velocity_left = -1
                     self.velocity_right = 1
             self.black_square()
-                    
+              #Termination criteria. If the robot reaches the end of the corridor (all proximity sensors, except the back two, detect the walls as sufficiently close)  it will stop.          
             if distance_left >100 and distance_right > 100 and self.proximity_sensors[6].getValue() > 100 and self.proximity_sensors[7].getValue()>100 and self.proximity_sensors[0].getValue()>100 and self.proximity_sensors[1].getValue()>100:
                 self.velocity_left = 0
                 self.velocity_right = 0
-                self.left_motor.setVelocity(self.velocity_left)
-                self.right_motor.setVelocity(self.velocity_right)   
+                self.left_motor.setVelocity(self.velocity_left) # publishes velocities to the motors   
+                self.right_motor.setVelocity(self.velocity_right)  # publishes velocities to the motors    
                 print('reached goal')
                 sys.exit("System Exiting")
                 print("Program End")                 
                               
-            self.left_motor.setVelocity(self.velocity_left)
-            self.right_motor.setVelocity(self.velocity_right)       
-                
-            # Smooth filter (Average)
-            smooth = 30
-            if(count == smooth):
-                inputs_avg = [sum(x) for x in zip(*inputs_avg)]
-                self.inputs = [x/smooth for x in inputs_avg]
-                # Compute and actuate
-                self.black_square()
-                # Reset
-                count = 0
-                inputs_avg = []
-                self.inputsPrevious = self.inputs
-            else:
-                inputs_avg.append(self.inputs)
-                count = count + 1
+            self.left_motor.setVelocity(self.velocity_left) # publishes velocities to the motors
+            self.right_motor.setVelocity(self.velocity_right)  # publishes velocities to the motors     
+              
                 
             
 if __name__ == "__main__":
