@@ -1,6 +1,7 @@
 ############# CODE FROM LAB1 OF F21RO INTELLIGENT ROBOTICS ################
 from controller import Robot
 from datetime import datetime
+from timeit import default_timer as timer
 import math
 import numpy as np
 import sys
@@ -43,7 +44,9 @@ class Controller:
  #################### STUDENTS CODE #######################################      
         #black
         self.black=False #set at start no black detected
-        
+        #timing
+        self.start_time=timer()
+        self.current_time= timer()
         
     def black_square(self):
           if self.center_ir.getValue()<500: #If black (gs<500) is detected, black=True
@@ -113,6 +116,9 @@ class Controller:
                 self.left_motor.setVelocity(self.velocity_left) # publishes velocities to the motors   
                 self.right_motor.setVelocity(self.velocity_right)  # publishes velocities to the motors    
                 print('reached goal')
+                self.current_time=timer()
+                time_taken=self.current_time-self.start_time
+                print(f' Time taken is {time_taken}')
                 sys.exit("System Exiting") #terminates program
                 print("Program End")                 
                               
