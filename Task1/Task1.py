@@ -1,3 +1,4 @@
+############# CODE FROM LAB1 OF F21RO INTELLIGENT ROBOTICS ################
 from controller import Robot
 from datetime import datetime
 import math
@@ -38,7 +39,8 @@ class Controller:
         # Data
         self.inputs = []
         self.inputsPrevious = []
-        
+ ################################################################################### 
+ #################### STUDENTS CODE #######################################      
         #black
         self.black=False #set at start no black detected
         
@@ -47,7 +49,8 @@ class Controller:
           if self.center_ir.getValue()<500: #If black (gs<500) is detected, black=True
               self.black=True
               print('black detected on floor')
-                                     
+ ########################################################################### 
+ ############# CODE FROM LAB1 OF F21RO INTELLIGENT ROBOTICS ################                                   
     def run_robot(self):        
         # Main Loop
         count = 0;
@@ -69,8 +72,8 @@ class Controller:
             if(left < min_gs): left = min_gs
             if(center < min_gs): center = min_gs
             if(right < min_gs): right = min_gs
-
-            
+################################################################################
+ #################### STUDENTS CODE #######################################            
             # Read Distance Sensors
 
             distance_left = self.proximity_sensors[5].getValue()
@@ -110,15 +113,16 @@ class Controller:
                 self.left_motor.setVelocity(self.velocity_left) # publishes velocities to the motors   
                 self.right_motor.setVelocity(self.velocity_right)  # publishes velocities to the motors    
                 print('reached goal')
-                sys.exit("System Exiting")
+                sys.exit("System Exiting") #terminates program
                 print("Program End")                 
                               
             self.left_motor.setVelocity(self.velocity_left) # publishes velocities to the motors
             self.right_motor.setVelocity(self.velocity_right)  # publishes velocities to the motors     
-              
+#########################################################################################################################              
                 
-            
+############# CODE FROM LAB1 OF F21RO INTELLIGENT ROBOTICS ################            
 if __name__ == "__main__":
     my_robot = Robot()
     controller = Controller(my_robot)
     controller.run_robot()
+##########################################################################
