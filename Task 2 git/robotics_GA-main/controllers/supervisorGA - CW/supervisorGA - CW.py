@@ -168,7 +168,10 @@ class SupervisorGA:
             
             # Check for Reward and add it to the fitness value here
             # Add your code here
-            
+            white_x_goal= -0.36543
+            white_z_goal= -0.144706
+            black_x_goal= 0.360132
+            black_z_goal= -0.152435
             print("Fitness: {}".format(fitness))
             
             # Add fitness value to the vector
