@@ -35,8 +35,8 @@ class SupervisorGA:
         self.emitterData = ""
         
         ### Define here the GA Parameters
-        self.num_generations = 10
-        self.num_population = 5
+        self.num_generations = 100
+        self.num_population = 10
         self.num_elite = 1
         
         # size of the genotype variable
@@ -111,7 +111,7 @@ class SupervisorGA:
         fitnessPerTrial = []
         while currentInteraction < numberofInteractionLoops:
             #######################################
-            # TRIAL: TURN RIGHT
+            # TRIAL: TURN RIGHT #Turn right = black mark
             #######################################
             # Send genotype to robot for evaluation
             self.emitterData = str(genotype)
@@ -136,14 +136,20 @@ class SupervisorGA:
             
             # Check for Reward and add it to the fitness value here
             # Add your code here
-            
-            print("Fitness: {}".format(fitness))     
-                        
+
+            black_x_goal= 0.360132
+            black_z_goal= -0.152435
+            puck_position = self.robot_node.getPosition() # [0] is x, [1] is y, [2] is z. x and z are useful.
+            print(f' translation is {puck_position}')            
+            print("Fitness before goal reward: {}".format(fitness))     
+            Reward = 1/(abs(puck_position[0] - black_x_goal)) + 1/(abs(puck_position[2] - black_z_goal))
+            print(f'Reward is {Reward}')  
+            fitness = fitness + Reward          
             # Add fitness value to the vector
             fitnessPerTrial.append(fitness)
             
             #######################################
-            # TRIAL: TURN LEFT
+            # TRIAL: TURN LEFT # turn left = no black mark
             #######################################
             # Send genotype to robot for evaluation
             self.emitterData = str(genotype)
@@ -170,10 +176,13 @@ class SupervisorGA:
             # Add your code here
             white_x_goal= -0.36543
             white_z_goal= -0.144706
-            black_x_goal= 0.360132
-            black_z_goal= -0.152435
-            print("Fitness: {}".format(fitness))
-            
+            puck_position = self.robot_node.getPosition() # [0] is x, [1] is y, [2] is z. x and z are useful.
+            print(f' translation is {puck_position}')            
+            print("Fitness before goal reward: {}".format(fitness))     
+            Reward = 1/(abs(puck_position[0] - white_x_goal)) + 1/(abs(puck_position[2] - white_z_goal))
+            print(f'Reward is {Reward}')  
+            fitness = fitness + Reward
+            print(f'Fitness after reward is {fitness}')   
             # Add fitness value to the vector
             fitnessPerTrial.append(fitness)
             
