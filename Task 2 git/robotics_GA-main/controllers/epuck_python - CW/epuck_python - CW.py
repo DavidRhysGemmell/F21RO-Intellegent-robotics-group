@@ -164,7 +164,7 @@ class Controller:
         #print(f'Combined fitness is {self.combinedFitness}')
         self.fitness_values.append(self.combinedFitness)
         self.fitness = np.mean(self.fitness_values) 
-        print(self.fitness)
+        #print(self.fitness)
     def handle_emitter(self):
         # Send the self.fitness value to the supervisor
         data = str(self.number_weights)
