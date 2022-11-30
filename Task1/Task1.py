@@ -10,7 +10,7 @@ class Controller:
         # Robot Parameters
         self.robot = robot
         self.time_step = 32 # ms
-        self.max_speed = 6.28  # m/s
+        self.max_speed = 6.28  # m/s #edited to max speed of puck
  
         # Enable Motors
         self.left_motor = self.robot.getDevice('left wheel motor')
