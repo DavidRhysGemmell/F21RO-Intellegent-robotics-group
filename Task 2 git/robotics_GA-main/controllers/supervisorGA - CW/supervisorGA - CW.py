@@ -35,8 +35,8 @@ class SupervisorGA:
         self.emitterData = ""
         
         ### Define here the GA Parameters
-        self.num_generations = 100
-        self.num_population = 10
+        self.num_generations = 10
+        self.num_population = 5
         self.num_elite = 1
         
         # size of the genotype variable
@@ -140,11 +140,13 @@ class SupervisorGA:
             black_x_goal= 0.360132
             black_z_goal= -0.152435
             puck_position = self.robot_node.getPosition() # [0] is x, [1] is y, [2] is z. x and z are useful.
-            print(f' translation is {puck_position}')            
+            #print(f' translation is {puck_position}')            
             print("Fitness before goal reward: {}".format(fitness))     
             Reward = 1/(abs(puck_position[0] - black_x_goal)) + 1/(abs(puck_position[2] - black_z_goal))
+            if Reward > 300:
+                Reward=300
             print(f'Reward is {Reward}')  
-            fitness = fitness + Reward          
+            fitness = fitness + 0.1*Reward          
             # Add fitness value to the vector
             fitnessPerTrial.append(fitness)
             
