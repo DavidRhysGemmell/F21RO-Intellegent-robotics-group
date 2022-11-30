@@ -148,7 +148,7 @@ class Controller:
       
    
         for i in range(8):
-            if self.proximity_sensors[i].getValue()>400: #400 to tune
+            if self.proximity_sensors[i].getValue()>300: #400 to tune
                self.collision_fitness=-5 # to tune
 
 
@@ -160,7 +160,7 @@ class Controller:
                self.spin_fitness=0 
              
         ### Define the fitness function of this iteration which should be a combination of the previous functions         
-        self.combinedFitness = self.spin_fitness+self.collision_fitness+self.forward_fitness
+        self.combinedFitness = self.spin_fitness+2*self.collision_fitness+self.forward_fitness
         #print(f'Combined fitness is {self.combinedFitness}')
         self.fitness_values.append(self.combinedFitness)
         self.fitness = np.mean(self.fitness_values) 
@@ -275,4 +275,3 @@ if __name__ == "__main__":
     # Run the controller
     controller.run_robot()
    
-
