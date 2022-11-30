@@ -142,7 +142,7 @@ class SupervisorGA:
             puck_position = self.robot_node.getPosition() # [0] is x, [1] is y, [2] is z. x and z are useful.
             #print(f' translation is {puck_position}')            
             print("Fitness before goal reward: {}".format(fitness))     
-            Reward = 1/(abs(puck_position[0] - black_x_goal)) + 1/(abs(puck_position[2] - black_z_goal))
+            Reward = 1/(abs(puck_position[0] - black_x_goal)) #+ 1/(abs(puck_position[2] - black_z_goal))
             if Reward > 300:
                 Reward=300
             print(f'Reward is {Reward}')  
@@ -179,9 +179,9 @@ class SupervisorGA:
             white_x_goal= -0.36543
             white_z_goal= -0.144706
             puck_position = self.robot_node.getPosition() # [0] is x, [1] is y, [2] is z. x and z are useful.
-            print(f' translation is {puck_position}')            
+            #print(f' translation is {puck_position}')            
             print("Fitness before goal reward: {}".format(fitness))     
-            Reward = 1/(abs(puck_position[0] - white_x_goal)) + 1/(abs(puck_position[2] - white_z_goal))
+            Reward = 1/(abs(puck_position[0] - white_x_goal))# + 1/(abs(puck_position[2] - white_z_goal))
             print(f'Reward is {Reward}')  
             fitness = fitness + Reward
             print(f'Fitness after reward is {fitness}')   
