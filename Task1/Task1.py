@@ -10,7 +10,7 @@ class Controller:
         # Robot Parameters
         self.robot = robot
         self.time_step = 32 # ms
-        self.max_speed = 1  # m/s
+        self.max_speed = 6.28  # m/s
  
         # Enable Motors
         self.left_motor = self.robot.getDevice('left wheel motor')
@@ -49,7 +49,7 @@ class Controller:
         self.current_time= timer()
         
     def black_square(self):
-          if self.center_ir.getValue()<500: #If black (gs<500) is detected, black=True
+          if self.center_ir.getValue()<400: #If black (gs<500) is detected, black=True
               self.black=True
               print('black detected on floor')
  ########################################################################### 
@@ -91,23 +91,23 @@ class Controller:
             else:
                 distance_center= self.proximity_sensors[0].getValue()#if black has not been detected we take the front right sensor as the center sensor. This stops the bot oversteering once it's turned left.
 
-            if abs(distance_left - distance_right)<100: #If the difference between the left and right sensors is relatively equal the bot will drive straight.
-                self.velocity_left = 1
-                self.velocity_right = 1
+            if abs(distance_left - distance_right)<225: #If the difference between the left and right sensors is relatively equal the bot will drive straight.
+                self.velocity_left = self.max_speed
+                self.velocity_right = self.max_speed
             elif distance_left>distance_right: #If the left wall is closer than the right wall (within margin) then the bot will turn right. Note, greater number = closer.
-                self.velocity_left = 1
-                self.velocity_right = 0.5
+                self.velocity_left = self.max_speed
+                self.velocity_right = self.max_speed/2
             elif  distance_left<distance_right:#If the right wall is closer than the left wall (within margin) then the bot will turn left. Note, greater number = closer.
-                self.velocity_left = 0.5
-                self.velocity_right = 1
+                self.velocity_left = self.max_speed/2
+                self.velocity_right = self.max_speed
             
             if distance_center>100:   #If the frontal proximity sensors detect an object close to it              
                 if self.black==True: #If it's seen black the bot will turn right
-                    self.velocity_left = 1
-                    self.velocity_right = -1
+                    self.velocity_left = self.max_speed
+                    self.velocity_right = -self.max_speed
                 else: #If it has not seen black then the bot will turn left
-                    self.velocity_left = -1
-                    self.velocity_right = 1
+                    self.velocity_left = -self.max_speed
+                    self.velocity_right = self.max_speed
             self.black_square()
               #Termination criteria. If the robot reaches the end of the corridor (all proximity sensors, except the back two, detect the walls as sufficiently close)  it will stop.          
             if distance_left >100 and distance_right > 100 and self.proximity_sensors[6].getValue() > 100 and self.proximity_sensors[7].getValue()>100 and self.proximity_sensors[0].getValue()>100 and self.proximity_sensors[1].getValue()>100:
