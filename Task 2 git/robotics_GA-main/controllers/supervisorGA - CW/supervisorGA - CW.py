@@ -1,3 +1,4 @@
+########## CODE FROM https://github.com/jhielson/Robotics_GA ################
 from controller import Supervisor
 from controller import Keyboard
 from controller import Display
@@ -35,8 +36,8 @@ class SupervisorGA:
         self.emitterData = ""
         
         ### Define here the GA Parameters
-        self.num_generations = 40
-        self.num_population = 5
+        self.num_generations = 40 # Student edited
+        self.num_population = 5 # Student edited
         self.num_elite = 1
         
         # size of the genotype variable
@@ -136,7 +137,7 @@ class SupervisorGA:
             
             # Check for Reward and add it to the fitness value here
             # Add your code here
-
+################################ STUDENTS CODE #####################################################
             black_x_goal= 0.360132
             black_z_goal= -0.152435
             puck_position = self.robot_node.getPosition() # [0] is x, [1] is y, [2] is z. x and z are useful.
@@ -151,7 +152,9 @@ class SupervisorGA:
             Reward = x_Reward + z_Reward  #maximum 35             
             print(f'Reward is {Reward}')  
             fitness = fitness + 0.1*Reward 
-            print(f'Fitness after reward is {fitness}')            
+            print(f'Fitness after reward is {fitness}')
+####################################################################################################   
+########## CODE FROM https://github.com/jhielson/Robotics_GA ################         
             # Add fitness value to the vector
             fitnessPerTrial.append(fitness)
             
@@ -181,6 +184,7 @@ class SupervisorGA:
             
             # Check for Reward and add it to the fitness value here
             # Add your code here
+########################### STUDENTS CODE##################################################
             white_x_goal= -0.36543
             white_z_goal= -0.144706
             puck_position = self.robot_node.getPosition() # [0] is x, [1] is y, [2] is z. x and z are useful.
@@ -195,7 +199,9 @@ class SupervisorGA:
             Reward = x_Reward + z_Reward  #maximum 35             
             print(f'Reward is {Reward}')  
             fitness = fitness + 0.1*Reward
-            print(f'Fitness after reward is {fitness}')   
+            print(f'Fitness after reward is {fitness}')  
+###########################################################################################
+########## CODE FROM https://github.com/jhielson/Robotics_GA ################ 
             # Add fitness value to the vector
             fitnessPerTrial.append(fitness)
             
