@@ -1,3 +1,4 @@
+########## CODE FROM https://github.com/jhielson/Robotics_GA ################
 from controller import Robot, Receiver, Emitter
 import sys,struct,math
 import numpy as np
@@ -16,11 +17,11 @@ class Controller:
         ### Add the number of neurons for each layer.
         ### The number of neurons should be in between of 1 to 20.
         ### Number of hidden layers should be one or two.
-        self.number_input_layer = 11
+        self.number_input_layer = 11 # Student edited
         # Example with one hidden layers: self.number_hidden_layer = [5]
         # Example with two hidden layers: self.number_hidden_layer = [7,5]
-        self.number_hidden_layer = [5]
-        self.number_output_layer = 2
+        self.number_hidden_layer = [5] # Student edited
+        self.number_output_layer = 2 # Student edited
         
         # Create a list with the number of neurons per layer
         self.number_neuros_per_layer = []
@@ -76,12 +77,14 @@ class Controller:
         
         # Fitness value (initialization fitness parameters once)
         self.fitness_values = []
+######################## Students code #####################################
         self.fitness = 0
         self.forward_fitness=0
         self.collision_fitness=0
         self.spin_fitness=0
         self.combinedFitness=0
-
+#############################################################################
+########## CODE FROM https://github.com/jhielson/Robotics_GA ################
     def check_for_new_genes(self):
         if(self.flagMessage == True):
                 # Split the list based on the number of layers of your network
@@ -137,7 +140,7 @@ class Controller:
     def calculate_fitness(self):
         ### Define the fitness function to increase the speed of the robot and 
         ### to encourage the robot to move forward
-        
+####################### Students code ########################################################################        
         #forwardFitness?
         if abs(self.velocity_right-self.velocity_left) <0.2:
             self.forward_fitness = self.velocity_left+self.velocity_right
@@ -162,6 +165,8 @@ class Controller:
         ### Define the fitness function of this iteration which should be a combination of the previous functions         
         self.combinedFitness = self.spin_fitness+2*self.collision_fitness+self.forward_fitness
         #print(f'Combined fitness is {self.combinedFitness}')
+###################################################################################################################
+
         self.fitness_values.append(self.combinedFitness)
         self.fitness = np.mean(self.fitness_values) 
         #print(self.fitness)
