@@ -35,7 +35,7 @@ class SupervisorGA:
         self.emitterData = ""
         
         ### Define here the GA Parameters
-        self.num_generations = 10
+        self.num_generations = 40
         self.num_population = 5
         self.num_elite = 1
         
@@ -142,11 +142,16 @@ class SupervisorGA:
             puck_position = self.robot_node.getPosition() # [0] is x, [1] is y, [2] is z. x and z are useful.
             #print(f' translation is {puck_position}')            
             print("Fitness before goal reward: {}".format(fitness))     
-            Reward = 1/(abs(puck_position[0] - black_x_goal)) #+ 1/(abs(puck_position[2] - black_z_goal))
-            if Reward > 300:
-                Reward=300
+            x_Reward = 1/(abs(puck_position[0] - black_x_goal))# + 1/(abs(puck_position[2] - white_z_goal))
+            if x_Reward > 300:
+                x_Reward=300
+            z_Reward = 1/(abs(puck_position[2] - black_z_goal)) #small z rewards persuades the puck to go up first and improve the speed of learning
+            if z_Reward > 50:
+                z_Reward=50
+            Reward = x_Reward + z_Reward  #maximum 35             
             print(f'Reward is {Reward}')  
-            fitness = fitness + 0.1*Reward          
+            fitness = fitness + 0.1*Reward 
+            print(f'Fitness after reward is {fitness}')            
             # Add fitness value to the vector
             fitnessPerTrial.append(fitness)
             
@@ -181,9 +186,15 @@ class SupervisorGA:
             puck_position = self.robot_node.getPosition() # [0] is x, [1] is y, [2] is z. x and z are useful.
             #print(f' translation is {puck_position}')            
             print("Fitness before goal reward: {}".format(fitness))     
-            Reward = 1/(abs(puck_position[0] - white_x_goal))# + 1/(abs(puck_position[2] - white_z_goal))
+            x_Reward = 1/(abs(puck_position[0] - white_x_goal))# + 1/(abs(puck_position[2] - white_z_goal))
+            if x_Reward > 300:
+                x_Reward=300
+            z_Reward = 1/(abs(puck_position[2] - white_z_goal)) #small z rewards persuades the puck to go up first and improve the speed of learning
+            if z_Reward > 50:
+                z_Reward=50
+            Reward = x_Reward + z_Reward  #maximum 35             
             print(f'Reward is {Reward}')  
-            fitness = fitness + Reward
+            fitness = fitness + 0.1*Reward
             print(f'Fitness after reward is {fitness}')   
             # Add fitness value to the vector
             fitnessPerTrial.append(fitness)
